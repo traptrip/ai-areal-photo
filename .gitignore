@@ -3,3 +3,5 @@ data/
 *.tiff
 *.zip
 *DS_Store
+__pycache__/
+.vscode
