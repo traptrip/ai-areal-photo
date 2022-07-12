@@ -1,0 +1,11 @@
+pandas
+tqdm
+opencv-python
+scikit-learn
+
+torch
+torchvision
+matplotlib
+
+jupyter
+notebook
