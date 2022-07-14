@@ -9,3 +9,5 @@ matplotlib
 
 jupyter
 notebook
+
+albumentations

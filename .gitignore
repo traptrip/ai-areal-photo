@@ -5,3 +5,8 @@ data/
 *DS_Store
 __pycache__/
 .vscode
+*.pth
+*.pt
+*.zip
+catboost_info/
+*.cbm
