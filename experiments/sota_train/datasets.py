@@ -11,6 +11,8 @@ from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 from PIL import Image
+from torchvision.transforms import transforms
+from torchvision.transforms.functional import InterpolationMode
 
 from transforms import RandomRotate, RandomCutmix, RandomMixup
 
@@ -60,6 +62,12 @@ class ImageDataset(Dataset):
         self.cloud_transform = cloud_transform
         self.stage = stage
 
+        if stage == "train":
+            interpolation = InterpolationMode(cfg.interpolation)
+            self.resize_transform = transforms.RandomResizedCrop(
+                cfg.train_crop_size, interpolation=interpolation
+            )
+
     def __getitem__(self, idx):
         # достаем имя изображения и ее лейбл
         image_name = self.data_df.iloc[idx]["id"]
@@ -95,6 +103,9 @@ class ImageDataset(Dataset):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         # преобразуем, если нужно. transform it, if necessary
+        if self.stage == "train":
+            image = np.asarray(self.resize_transform(Image.fromarray(image)))
+
         if self.cloud_transform is not None and random.random() > 0.5:
             image = self.cloud_transform(image=image)
 

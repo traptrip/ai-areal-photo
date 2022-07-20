@@ -15,7 +15,8 @@ class PresetTrain:
         auto_augment_policy=None,
         random_erase_prob=0.0,
     ):
-        trans = [transforms.RandomResizedCrop(crop_size, interpolation=interpolation)]
+        # trans = [transforms.RandomResizedCrop(crop_size, interpolation=interpolation)]
+        trans = []
         if hflip_prob > 0:
             trans.append(transforms.RandomHorizontalFlip(hflip_prob))
         if auto_augment_policy is not None:

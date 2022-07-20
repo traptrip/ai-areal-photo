@@ -16,20 +16,21 @@ class Config:
     output_dir = "run"
 
     # Model
-    model = "resnet50"
-    weights = models.ResNet50_Weights.IMAGENET1K_V2
+    # model = "resnet50"
+    # weights = models.ResNet50_Weights.IMAGENET1K_V2
     # model = "efficientnet_b0"
     # weights = models.EfficientNet_B0_Weights.IMAGENET1K_V1
+    model_name = "regnet_y_8gf"
 
     n_classes = 5
 
     # train options
-    batch_size = 256
+    batch_size = 128
     workers = 4
-    epochs = 350
+    epochs = 600
     amp = True
     gpus = [0]
-    resume = None  # resume model path
+    resume = "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run/best.pth"  # resume model path
     test_only = False
     start_epoch = 0
 
@@ -42,7 +43,7 @@ class Config:
     train_crop_size = 176
     interpolation = "bilinear"
     cache_dataset = True
-    auto_augment_policy = None  # "ta_wide"
+    auto_augment_policy = "ta_wide"
     random_erase_prob = 0.1
 
     ra_sampler = False

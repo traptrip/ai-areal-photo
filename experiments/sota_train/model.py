@@ -15,6 +15,28 @@ class CNN(nn.Module):
         elif name == "res50":
             self.model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2)
             self.model.fc = nn.Linear(self.model.fc.in_features, 5)
+        elif name == "regnet_y_3_2gf":
+            self.model = models.regnet_y_3_2gf(
+                weights=models.RegNet_Y_3_2GF_Weights.IMAGENET1K_V2
+            )
+            self.model.fc = nn.Linear(self.model.fc.in_features, 5)
+        elif name == "regnet_y_8gf":
+            self.model = models.regnet_y_8gf(
+                weights=models.RegNet_Y_8GF_Weights.IMAGENET1K_V2
+            )
+            self.model.fc = nn.Linear(self.model.fc.in_features, 5)
+        elif name == "regnet_y_16gf":
+            self.model = models.regnet_y_16gf(
+                weights=models.RegNet_Y_16GF_Weights.IMAGENET1K_SWAG_E2E_V1
+            )
+            self.model.fc = nn.Linear(self.model.fc.in_features, 5)
+        elif name == "effb0":
+            self.model = models.efficientnet_b0(
+                weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1
+            )
+            self.model.classifier[1] = nn.Linear(
+                self.model.classifier[1].in_features, 5
+            )
         elif name == "effb1":
             self.model = models.efficientnet_b1(
                 weights=models.EfficientNet_B1_Weights.IMAGENET1K_V2

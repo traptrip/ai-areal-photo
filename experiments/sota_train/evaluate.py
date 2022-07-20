@@ -12,6 +12,7 @@ import presets
 import utils
 from datasets import ImageDataset, prepare_data
 from config import Config
+from model import CNN
 
 SEED = 42
 sigmoid = torch.nn.Sigmoid()
@@ -71,17 +72,19 @@ data_loader_valid = DataLoader(
 )
 
 
+# model = torchvision.models.__dict__["resnet50"](
+#     weights=None
+# )
+# model.fc = torch.nn.Linear(model.fc.in_features, 5)
+model = CNN("regnet_y_8gf")
 weights = torch.load(
-    "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_res50/best.pth"
+    "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_regnet_y_8gf_clouds/best.pth"
 )["model"]
-model = torchvision.models.__dict__[cfg.model](weights=cfg.weights)
-model.fc = torch.nn.Linear(model.fc.in_features, 5)
 model.load_state_dict(weights)
 model.to(cfg.device)
 model.eval()
 
 all_preds = []
-all_preds_sigmoid = []
 all_targets = []
 with torch.inference_mode():
     for images, target in data_loader_valid:
@@ -89,8 +92,6 @@ with torch.inference_mode():
         pred = model(images)
 
         all_preds.extend(pred.cpu().tolist())
-        all_preds_sigmoid.extend(sigmoid(pred).cpu().tolist())
         all_targets.extend(target.cpu().tolist())
 
-print("Base", _compute_metric(all_targets, all_preds))
-print("Sigmoid", _compute_metric(all_targets, all_preds_sigmoid))
+print("Score:", _compute_metric(all_targets, all_preds))

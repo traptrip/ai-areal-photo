@@ -22,7 +22,7 @@ from config import Config
 from model import CNN
 
 
-sm = SummaryWriter(log_dir="tb_logs/res50")
+sm = SummaryWriter(log_dir="tb_logs/run")
 
 
 def train_one_epoch(
@@ -158,7 +158,7 @@ def load_data(cfg):
             auto_augment_policy=cfg.auto_augment_policy,
             random_erase_prob=cfg.random_erase_prob,
         ),
-        # cloud_transform=cloud_transform,
+        cloud_transform=cloud_transform,
         stage="train",
     )
     print("Took", time.time() - st)
@@ -250,7 +250,7 @@ def main(cfg):
     print("Creating model")
     # model = torchvision.models.__dict__[cfg.model](weights=cfg.weights)
     # model.fc = nn.Linear(model.fc.in_features, 5)
-    model = CNN("res50")
+    model = CNN(cfg.model_name)
     model.to(device)
 
     if cfg.distributed and cfg.sync_bn:
