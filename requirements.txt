@@ -11,3 +11,4 @@ jupyter
 notebook
 
 albumentations
+tensorboard

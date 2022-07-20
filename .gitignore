@@ -10,3 +10,6 @@ __pycache__/
 *.zip
 catboost_info/
 *.cbm
+tb_logs/
+run*/
+.ipynb_checkpoints/
