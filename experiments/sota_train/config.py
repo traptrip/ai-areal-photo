@@ -11,7 +11,7 @@ class Config:
     use_deterministic_algorithms = True
     distributed = False
     train_folder = "train"
-    test_size = 0.2
+    test_size = 0.05
     original_img_size = 10496
     output_dir = "run"
 
@@ -20,17 +20,17 @@ class Config:
     # weights = models.ResNet50_Weights.IMAGENET1K_V2
     # model = "efficientnet_b0"
     # weights = models.EfficientNet_B0_Weights.IMAGENET1K_V1
-    model_name = "regnet_y_3_2gf"
+    model_name = "regnet_y_8gf"
 
     n_classes = 5
 
     # train options
-    batch_size = 256
+    batch_size = 128
     workers = 4
-    epochs = 800
+    epochs = 1000
     amp = True
     gpus = [0]
-    resume = None  # "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_regnet_y_8gf/best.pth"  # resume model path
+    resume = None  # resume model path
     test_only = False
     start_epoch = 0
 
@@ -54,7 +54,8 @@ class Config:
     cutmix_alpha = 1.0
 
     # optimizer
-    optimizer = "adamw"
+    optimizer = "adam"
+    momentum = 0.9
     lr = 1e-3
     bias_weight_decay = None
     transformer_embedding_decay = None
@@ -71,9 +72,9 @@ class Config:
     lr_warmup_decay = 0.01
 
     # EMA
-    model_ema = True
+    model_ema = False
     world_size = 1  # dist.get_world_size()
-    model_ema_steps = 32
+    model_ema_steps = 16
     model_ema_decay = 0.99998
 
     # Gradients

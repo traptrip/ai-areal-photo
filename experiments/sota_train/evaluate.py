@@ -91,6 +91,7 @@ def inv_tta(pred, angle):
 
 
 cfg = Config()
+cfg.test_size = 0.2
 
 train_df, valid_df = prepare_data(cfg)
 valid_dataset = ImageDataset(
@@ -116,10 +117,10 @@ data_loader_valid = DataLoader(
 #     weights=None
 # )
 # model.fc = torch.nn.Linear(model.fc.in_features, 5)
-model = CNN("swin_t")
+model = CNN("regnet_y_8gf")
 weights = torch.load(
-    "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run/best.pth"
-)["model"]
+    "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_regnet_y_8gf_clouds_v2/regnet_y_8gf_best_weights.pth"
+)
 model.load_state_dict(weights)
 model.to(cfg.device)
 model.eval()
@@ -131,7 +132,7 @@ with torch.inference_mode():
         images = images.to(cfg.device)
 
         preds = []
-        for angle in [0, 180]:
+        for angle in [0]:
             tta_img = tta(images[0], angle).unsqueeze(0)
             pred = model(tta_img).squeeze(0).cpu().numpy()
             pred = inv_tta(pred, angle)

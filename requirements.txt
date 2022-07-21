@@ -12,3 +12,4 @@ notebook
 
 albumentations
 tensorboard
+imgaug

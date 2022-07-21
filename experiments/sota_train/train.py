@@ -423,7 +423,7 @@ def main(cfg):
             )
         sm.add_scalar("Score/train", train_score, epoch)
         sm.add_scalar("Score/valid", valid_score, epoch)
-        sm.add_scalar("Score/valid_ema", valid_score_ema, epoch)
+        # sm.add_scalar("Score/valid_ema", valid_score_ema, epoch)
         if cfg.output_dir and valid_score > best_score:
             best_score = valid_score
             checkpoint = {
