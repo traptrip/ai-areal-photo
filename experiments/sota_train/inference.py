@@ -1,4 +1,5 @@
 import torch
+import math
 import numpy as np
 import os
 import random
@@ -9,6 +10,7 @@ from pathlib import Path
 import pandas as pd
 import json
 from tqdm import tqdm
+from torchvision.transforms import functional as F
 
 from model import CNN
 import presets
@@ -77,6 +79,39 @@ data_loader = DataLoader(
     num_workers=cfg.workers,
     pin_memory=True,
 )
+
+
+def tta(img, angle):
+    interpolation = F.InterpolationMode.BILINEAR
+    tta_img = F.rotate(torch.from_numpy(img), angle, interpolation)
+    return tta_img.numpy()
+
+
+def inv_tta(prediction, angle):
+
+    pred_angle = prediction[4]
+    top_left_x, top_left_y, bottom_right_x, bottom_right_y = prediction[:4]
+
+    center_coords = (top_left_x + bottom_right_x) // 2, (
+        top_left_y + bottom_right_y
+    ) // 2
+
+    matrix = cv2.getRotationMatrix2D(center_coords, -angle, 1.0)
+
+    top_left_x, top_left_y = cv2.transform(
+        np.array([[[top_left_x, top_left_y]]]), matrix
+    ).squeeze()
+    bottom_right_x, bottom_right_y = cv2.transform(
+        np.array([[[bottom_right_x, bottom_right_y]]]), matrix
+    ).squeeze()
+
+    return (
+        top_left_x,
+        top_left_y,
+        bottom_right_x,
+        bottom_right_y,
+        math.degrees(math.radians(pred_angle) + math.radians(angle)),
+    )
 
 
 with torch.inference_mode():

@@ -1,24 +1,32 @@
 import random
 import os
 import math
+from copy import deepcopy
 
+import pandas as pd
 import cv2
 import torch
 import torchvision
 import numpy as np
+import albumentations as A
 from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 from torchvision.transforms import functional as F
+from tqdm import tqdm
+from torchvision.transforms.functional import InterpolationMode
 
+import transforms
 import presets
 import utils
-from datasets import ImageDataset, prepare_data
+from datasets import prepare_data, ImageDataset
 from config import Config
 from model import CNN
+from losses import RegressionLoss
+
 
 SEED = 42
 IMG_SIZE = 10496
-sigmoid = torch.nn.Sigmoid()
+sigmoid = torch.torch.nn.Sigmoid()
 
 
 def _compute_metric(data_true_batch, data_pred_batch, w=10496, h=10496):
@@ -111,34 +119,61 @@ data_loader_valid = DataLoader(
     pin_memory=True,
 )
 
+cv_models = []
 
-# model = torchvision.models.__dict__["resnet50"](
-#     weights=None
-# )
-# model.fc = torch.nn.Linear(model.fc.in_features, 5)
-model = CNN("swin_t")
+model = CNN("regnet_y_8gf")
 weights = torch.load(
-    "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run/best.pth"
+    "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_regnet_y_8gf/best.pth"
 )["model"]
 model.load_state_dict(weights)
-model.to(cfg.device)
-model.eval()
+cv_models.append(model)
 
-all_preds = []
+model = CNN("regnet_y_8gf")
+weights = torch.load(
+    "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_regnet_y_8gf_clouds_autoaug/best.pth"
+)["model"]
+model.load_state_dict(weights)
+cv_models.append(model)
+
+
+# model = CNN("res50")
+# weights = torch.load(
+#     "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_res50/best.pth"
+# )["model"]
+# model.load_state_dict(weights)
+# cv_models.append(model)
+
+
+for model in cv_models:
+    model.to(cfg.device)
+    model.eval()
+
+
+agg_preds = []
 all_targets = []
-with torch.inference_mode():
-    for images, target in data_loader_valid:
-        images = images.to(cfg.device)
 
-        preds = []
-        for angle in [0, 180]:
-            tta_img = tta(images[0], angle).unsqueeze(0)
-            pred = model(tta_img).squeeze(0).cpu().numpy()
-            pred = inv_tta(pred, angle)
-            preds.append(pred)
-        preds = torch.tensor(preds).mean(0)
+for model_num, model in enumerate(cv_models[:]):
+    all_preds = []
+    with torch.inference_mode():
+        for images, target in data_loader_valid:
+            images = images.to(cfg.device)
 
-        all_preds.append(preds.cpu().tolist())
-        all_targets.extend(target.cpu().tolist())
+            preds = []
+            for angle in [0, 180]:
+                tta_img = tta(images[0], angle).unsqueeze(0)
+                pred = model(tta_img).squeeze(0).cpu().numpy()
+                pred = inv_tta(pred, angle)
+                preds.append(pred)
+            preds = torch.tensor(preds).mean(0)
 
-print("Score:", _compute_metric(all_targets, all_preds))
+            all_preds.append(preds.cpu().tolist())
+
+            if model_num == 0:
+                all_targets.extend(target.cpu().tolist())
+    agg_preds.append(all_preds)
+
+if len(agg_preds) > 1:
+    agg_preds = np.average(agg_preds, axis=0, weights=[9, 7])
+    print("Score:", _compute_metric(all_targets, agg_preds))
+else:
+    print("Score:", _compute_metric(all_targets, agg_preds[0]))

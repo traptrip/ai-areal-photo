@@ -158,7 +158,7 @@ def load_data(cfg):
             auto_augment_policy=cfg.auto_augment_policy,
             random_erase_prob=cfg.random_erase_prob,
         ),
-        cloud_transform=cloud_transform,
+        # cloud_transform=cloud_transform,
         stage="train",
     )
     print("Took", time.time() - st)

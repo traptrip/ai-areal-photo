@@ -65,6 +65,17 @@ class CNN(nn.Module):
             self.model.classifier[1] = nn.Linear(
                 self.model.classifier[1].in_features, 5
             )
+        elif name == "swin_t":
+            self.model = models.swin_t(weights=models.Swin_T_Weights.IMAGENET1K_V1)
+            self.model.head = nn.Linear(self.model.head.in_features, 5)
+
+        elif name == "convnext_s":
+            self.model = models.convnext_small(
+                weights=models.ConvNeXt_Small_Weights.IMAGENET1K_V1
+            )
+            self.model.classifier[2] = nn.Linear(
+                self.model.classifier[2].in_features, 5
+            )
 
         self.sigmoid = nn.Sigmoid()
 
