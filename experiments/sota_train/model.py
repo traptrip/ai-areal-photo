@@ -77,9 +77,33 @@ class CNN(nn.Module):
                 self.model.classifier[2].in_features, 5
             )
 
+        elif name == "vit_b16":
+            self.model = models.vit_b_16(weights=models.ViT_B_16_Weights.IMAGENET1K_V1)
+            self.model.head = nn.Linear(self.model.head.in_features, 5)
+
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         x = self.model(x)
         x = self.sigmoid(x)
         return x
+
+
+class Regressor(nn.Module):
+    def __init__(self, in_features=25):
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(in_features, 512),
+            nn.ELU(),
+            nn.Linear(512, 256),
+            nn.ELU(),
+            nn.Linear(256, 64),
+            nn.ELU(),
+            nn.Linear(64, 32),
+            nn.ELU(),
+            nn.Linear(32, 5),
+            nn.Sigmoid(),
+        )
+
+    def forward(self, x):
+        return self.layers(x)

@@ -152,13 +152,12 @@ weights = torch.load(
 model.load_state_dict(weights)
 cv_models.append(model)
 
-
-# model = CNN("res50")
-# weights = torch.load(
-#     "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_res50/best.pth"
-# )["model"]
-# model.load_state_dict(weights)
-# cv_models.append(model)
+model = CNN("regnet_y_3_2gf")
+weights = torch.load(
+    "/home/and/projects/hacks/ai-areal-photo/experiments/sota_train/run_regnet_3_2gf_272_crop/best.pth"
+)["model"]
+model.load_state_dict(weights)
+cv_models.append(model)
 
 
 for model in cv_models:
@@ -176,7 +175,7 @@ for model_num, model in enumerate(cv_models[:]):
             images = images.to(cfg.device)
 
             preds = []
-            angles = [0, 180] if model_num in [0, 1] else [0]
+            angles = [0, 180] if model_num in [0, 1, 3] else [0]
             for angle in angles:
                 tta_img = tta(images[0], angle).unsqueeze(0)
                 pred = model(tta_img).squeeze(0).cpu().numpy()

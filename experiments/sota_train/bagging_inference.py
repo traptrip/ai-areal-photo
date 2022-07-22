@@ -132,7 +132,8 @@ for model in cv_models:
 
 
 test_transform = presets.PresetEval(
-    crop_size=cfg.val_crop_size, resize_size=cfg.val_resize_size
+    crop_size=cfg.val_crop_size,
+    resize_size=cfg.val_resize_size,
 )
 
 images_paths = sorted(
