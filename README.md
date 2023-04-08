@@ -1,7 +1,8 @@
 # AI Aeral photo hackathon 2022
 
-## Final solution
+[Task description](./MPTI.pdf)
 
+## Final solution
 ./experiments/sota_train/
   - train.py - файл с обучением модели
   - config.py - файл с конфигурацией для обучения
